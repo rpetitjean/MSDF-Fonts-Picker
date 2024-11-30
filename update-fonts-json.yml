@@ -1,0 +1,48 @@
+name: Update fonts.json
+
+on:
+  push:
+    paths:
+      - 'Fonts/*.msdf.json' # Watch for changes in the Fonts folder
+
+jobs:
+  update-fonts-json:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      # Step 3: Install dependencies (if needed)
+      - name: Install dependencies
+        run: npm install chokidar
+
+      # Step 4: Generate fonts.json
+      - name: Generate fonts.json
+        run: |
+          node -e "
+          const fs = require('fs');
+          const path = require('path');
+          const fontsDir = path.join(__dirname, 'Fonts');
+          const outputJson = path.join(fontsDir, 'fonts.json');
+          fs.readdir(fontsDir, (err, files) => {
+              if (err) throw err;
+              const fontFiles = files.filter(file => file.endsWith('.msdf.json'));
+              const fontsJson = { fonts: fontFiles };
+              fs.writeFileSync(outputJson, JSON.stringify(fontsJson, null, 2));
+          });
+          "
+
+      # Step 5: Commit and push changes
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "Auto-update fonts.json"
+          file_pattern: Fonts/fonts.json
