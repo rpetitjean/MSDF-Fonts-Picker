@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Font List</title>
+    <script>
+        const fontsFolder = '/fonts/';
+        const fontsJsonPath = `${fontsFolder}fonts.json`;
+
+        async function loadFonts() {
+            try {
+                console.log(`Fetching fonts.json from: ${fontsJsonPath}`);
+                const response = await fetch(fontsJsonPath);
+
+                console.log(`Response status: ${response.status}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch fonts.json: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('Fonts loaded:', data);
+
+                const fontList = document.getElementById('fontList');
+                data.fonts.forEach(font => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = font;
+                    listItem.dataset.link = `${fontsFolder}${font}`;
+                    listItem.addEventListener('click', () => copyToClipboard(listItem.dataset.link));
+                    fontList.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error('Error loading fonts:', error);
+                document.getElementById('fontList').innerHTML = '<li>Error loading fonts</li>';
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const copiedMessage = document.getElementById('copiedMessage');
+                copiedMessage.style.display = 'block';
+                setTimeout(() => copiedMessage.style.display = 'none', 2000);
+            }).catch(err => {
+                console.error('Failed to copy to clipboard:', err);
+            });
+        }
+
+        // Load fonts on page load
+        window.onload = loadFonts;
+    </script>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #000; color: #ff007f; text-align: center; padding: 20px; }
+        h1 { color: #00ff7f; }
+        ul { list-style: none; padding: 0; }
+        li { cursor: pointer; color: #00ff7f; margin: 10px; }
+        li:hover { color: #ff007f; }
+        .copied-message { display: none; color: #00ff7f; }
+    </style>
+</head>
+<body>
+    <h1>Font List</h1>
+    <p>Click a font to copy its link:</p>
+    <ul id="fontList"></ul>
+    <div id="copiedMessage" class="copied-message">Link copied!</div>
+</body>
+</html>
