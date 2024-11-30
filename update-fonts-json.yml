@@ -1,9 +1,9 @@
-name: Update fonts.json
+name: Auto-update fonts.json
 
 on:
   push:
     paths:
-      - 'Fonts/*.msdf.json' # Watch for changes in the Fonts folder
+      - 'Fonts/*.msdf.json' # Trigger when a .msdf.json file in Fonts folder changes
 
 jobs:
   update-fonts-json:
@@ -18,19 +18,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: '16' # Compatible version
 
-      # Step 3: Install dependencies (if needed)
-      - name: Install dependencies
-        run: npm install chokidar
-
-      # Step 4: Generate fonts.json
+      # Step 3: Generate fonts.json
       - name: Generate fonts.json
         run: |
           node -e "
           const fs = require('fs');
           const path = require('path');
-          const fontsDir = path.join(__dirname, 'Fonts');
+          const fontsDir = path.join(process.cwd(), 'Fonts');
           const outputJson = path.join(fontsDir, 'fonts.json');
           fs.readdir(fontsDir, (err, files) => {
               if (err) throw err;
@@ -40,7 +36,7 @@ jobs:
           });
           "
 
-      # Step 5: Commit and push changes
+      # Step 4: Commit and push changes
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
