@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-
-    <title>MSDF Font List</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/@tlaukkan/aframe-three-color-gradient-shader@0.0.1/index.js"></script>
+    <title>MSDF Font Viewer</title>
 
     <script>
         const fontsFolder = 'https://rpetitjean.github.io/MSDF-Fonts-Picker/Fonts/';
@@ -16,25 +16,32 @@
                 console.log(`Fetching fonts.json from: ${fontsJsonPath}`);
                 const response = await fetch(fontsJsonPath);
 
-                console.log(`Response status: ${response.status}`);
                 if (!response.ok) {
                     throw new Error(`Failed to fetch fonts.json: ${response.status} ${response.statusText}`);
                 }
 
                 const data = await response.json();
-                console.log('Fonts loaded:', data);
-
-                const fontList = document.getElementById('fontList');
+                const fontDropdown = document.getElementById('fontDropdown');
+                
+                // Populate the dropdown with font options
                 data.fonts.forEach(font => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = font;
-                    listItem.dataset.link = `${fontsFolder}${font}`;
-                    listItem.addEventListener('click', () => copyToClipboard(listItem.dataset.link));
-                    fontList.appendChild(listItem);
+                    const option = document.createElement('option');
+                    option.value = `${fontsFolder}${font}`;
+                    option.textContent = font;
+                    fontDropdown.appendChild(option);
                 });
             } catch (error) {
                 console.error('Error loading fonts:', error);
-                document.getElementById('fontList').innerHTML = '<li>Error loading fonts</li>';
+            }
+        }
+
+        function onFontSelect() {
+            const fontDropdown = document.getElementById('fontDropdown');
+            const fontUrl = fontDropdown.value;
+
+            if (fontUrl) {
+                copyToClipboard(fontUrl);
+                updateAFrameText(fontUrl);
             }
         }
 
@@ -43,96 +50,92 @@
                 const copiedMessage = document.getElementById('copiedMessage');
                 copiedMessage.style.display = 'block';
                 setTimeout(() => copiedMessage.style.display = 'none', 2000);
-            }).catch(err => {
-                console.error('Failed to copy to clipboard:', err);
-            });
+            }).catch(err => console.error('Failed to copy to clipboard:', err));
         }
 
-        // Load fonts on page load
+        function updateAFrameText(fontUrl) {
+            const textEntity = document.getElementById('text-entity');
+            const sentence = "Enfer ou Ciel, qu'importe. Au fond de l’Inconnu pour trouver du nouveau !";
+
+            textEntity.setAttribute('text', {
+                value: sentence,
+                font: fontUrl,
+                color: '#00ff7f',
+                align: 'center',
+                width: 2,
+                wrapCount: 20,
+                negate: false,
+            });
+            console.log(`Updated A-Frame text with font: ${fontUrl}`);
+        }
+
         window.onload = loadFonts;
     </script>
 
-<script>
-    // Define the sentence to display
-const sentence = "Plonger au fond du gouffre, Enfer ou Ciel, qu’importe ?\nAu fond de l’Inconnu pour trouver du nouveau !";
-
-// Base path for font files
-const fontsFolder = 'https://rpetitjean.github.io/MSDF-Fonts-Picker/Fonts/';
-
-// Initialize Three.js scene, camera, and renderer
-const viewer = document.getElementById('viewer');
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, viewer.offsetWidth / viewer.offsetHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(viewer.offsetWidth, viewer.offsetHeight);
-viewer.appendChild(renderer.domElement);
-
-// Set up lighting
-const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(1, 1, 1).normalize();
-scene.add(light);
-
-// Helper function to load and render the selected font
-function loadAndRenderFont(fontUrl) {
-    const loader = new THREE.FontLoader();
-    loader.load(fontUrl, font => {
-        // Clear existing objects in the scene
-        while (scene.children.length > 1) scene.remove(scene.children[1]);
-
-        // Create text geometry
-        const textGeometry = new THREE.TextGeometry(sentence, {
-            font: font,
-            size: 1,
-            height: 0.2,
-            curveSegments: 12,
-            bevelEnabled: true,
-            bevelThickness: 0.03,
-            bevelSize: 0.02
-        });
-
-        // Create text material
-        const textMaterial = new THREE.MeshPhongMaterial({ color: 0x00aaff });
-        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-
-        // Position and add text to the scene
-        textMesh.position.set(-10, 0, -30);
-        scene.add(textMesh);
-    });
-}
-
-// Add interactivity to the font list
-document.getElementById('fontList').addEventListener('click', event => {
-    if (event.target.tagName === 'LI') {
-        const fontUrl = event.target.dataset.link;
-        console.log(`Loading font: ${fontUrl}`);
-        loadAndRenderFont(fontUrl);
-    }
-});
-
-// Animation loop
-function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-}
-animate();
-
-</script>
-
     <style>
-        body { font-family: Arial, sans-serif; background-color: #000; color: #ff007f; text-align: center; padding: 20px; }
+      body {
+    margin: 0;
+    padding: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    font-family: Arial, sans-serif;
+    background: linear-gradient(0.25turn, #000000, #000000, #000000);
+    color: #ff007f;
+    text-align: center;
+}
         h1 { color: #44ff7f; }
-        ul { list-style: none; padding: 0; }
-        li { cursor: pointer; color: #00ff7f; margin: 10px; }
-        li:hover { color: #ff007f; }
+        select {
+    padding: 10px;
+    font-size: 16px;
+    margin: 20px auto;
+    display: block;
+    background-color: #000; /* Black background */
+    color: #ff007f; /* Pink text */
+    border: 2px solid #44ff7f; /* Green border */
+    border-radius: 5px; /* Optional rounded corners */
+    appearance: none; /* Removes default dropdown arrow styling */
+    cursor: pointer;
+    text-align: center; /* Centers the text inside the dropdown */
+}
+
+select:focus {
+    outline: none; /* Removes focus outline */
+    border-color: #00ff7f; /* Optional: Change border color on focus */
+}
+
+option {
+    background-color: #000; /* Ensures dropdown options also have a black background */
+    color: #ff007f; /* Pink text for options */
+}
+
         .copied-message { display: none; color: #00ff7f; }
+
+        /* Style for the circular A-Frame viewer */
+        a-scene {
+            width: 400px;
+            height: 400px;
+            margin: 20px auto;
+            border: 5px solid #ff007f;
+            border-radius: 50%; /* Makes the scene circular */
+            overflow: hidden; /* Ensures content stays within the circle */
+            box-shadow: 0 0 20px #ff007f; /* Adds a glowing effect */
+        }
     </style>
 </head>
 <body>
-    <h1>Font List</h1>
-    <div id="viewer" style="width: 800px; height: 400px; margin: 20px auto; border: 1px solid #ccc;"></div>
+    <h1>MSDF Font Viewer</h1>
 
-    <p>Click a font to copy its link:</p>
-    <ul id="fontList"></ul>
+    <a-scene embedded>
+        <a-entity id="text-entity" position="0 1.6 -1" text="value: Select a font to view; color: #00ff7f; align: center; negate: false; width: 4"></a-entity>
+        <a-light type="directional" position="0 2 -1" intensity="1"></a-light>
+        <a-light type="ambient" intensity="0.5"></a-light>
+        <a-camera position="0 1.6 0" wasd-controls-enabled="false"></a-camera>
+        <a-sky geometry="" material="shader: threeColorGradientShader; topColor: #000000; middleColor: #000000; bottomColor: #000000"></a-sky>
+    </a-scene>
+
+    <select id="fontDropdown" onchange="onFontSelect()">
+        <option value="" disabled selected>Select a font</option>
+    </select>
     
     <div id="copiedMessage" class="copied-message">Link copied!</div>
 </body>
