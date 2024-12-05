@@ -9,7 +9,7 @@
 
     <script>
         const baseURL = 'https://rpetitjean.github.io/MSDF-Fonts-Picker/';
-        const fontsFolder = `${baseURL}Fonts/`;
+        const fontsFolder = `/Fonts/`;
         const fontsJsonPath = `${fontsFolder}fonts.json`;
 
         async function loadFonts() {
@@ -57,14 +57,14 @@
 
         function updateAFrameText(fontUrl) {
             const textEntity = document.getElementById('text-entity');
-            const sentence = "Au fond de l’Inconnu pour trouver du nouveau !";
+            const sentence = "Enfer ou Ciel qu'importe. Au fond de l'Inconnu pour trouver du nouveau !";
 
             textEntity.setAttribute('text', {
                 value: sentence,
                 font: fontUrl,
                 color: '#ff007f',
                 align: 'center',
-                width: 2,
+                width: 1.5,
                 wrapCount: 20,
                 negate: false
             });
@@ -74,81 +74,195 @@
         window.onload = loadFonts;
     </script>
 
+<script>
+function copyToClipboard(text) {
+    const copiedMessage = document.getElementById('copiedMessage');
+
+    if (!copiedMessage) {
+        console.error('Copied message element not found!');
+        return;
+    }
+
+    // Attempt to copy to clipboard
+    navigator.clipboard.writeText(text)
+        .then(() => {
+            // Make the copied message visible
+            copiedMessage.style.visibility = 'visible';
+            copiedMessage.style.opacity = '1';
+
+            // Hide it after 2 seconds
+            setTimeout(() => {
+                copiedMessage.style.opacity = '0';
+                setTimeout(() => {
+                    copiedMessage.style.visibility = 'hidden';
+                }, 300); // Wait for the fade-out transition to complete
+            }, 2000);
+        })
+        .catch((err) => {
+            console.error('Failed to copy to clipboard:', err);
+        });
+}
+
+
+</script>
+
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(#e66465, #9198e5);
-            color: #ff007f;
-            text-align: center;
-        }
+        html,/* Overall body styling */
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(#000000, #000000);
+    color: #ff007f;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
 
-        h1 {
-            color: #00ff7f;
-            text-shadow: 0 0 20px #ff007f, 0 0 30px #ff007f, 0 0 40px #ff007f;
-            font-size: 3rem;
-            font-weight: bold;
-            margin-top: 20px;
-            letter-spacing: 2px;
-            line-height: 1.2;
-        }
+/* Title styling */
+h1 {
+    color: #00ff7f;
+    text-shadow: 0 0 20px #ff007f, 0 0 30px #ff007f, 0 0 40px #ff007f;
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 50px 0 20px; /* Increase top margin to push it further down */
+    letter-spacing: 2px;
+  
+}
 
-        select {
-            padding: 10px;
-            font-size: 16px;
-            margin: 20px auto;
-            display: block;
-            background-color: #000;
-            color: #ff007f;
-            border: 2px solid #44ff7f;
-            border-radius: 5px;
-            appearance: none;
-            cursor: pointer;
-            text-align: center;
-        }
+h2{
+    color: #ff007f;
+    text-shadow: 0 0 10px #00ff7f, 0 0 10px #00ff7f, 0 0 10px #00ff7f;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 50px 0 20px; /* Increase top margin to push it further down */
+    letter-spacing: 2px;
+  
+}
 
-        select:focus {
-            outline: none;
-            border-color: #00ff7f;
-        }
+/* h3 Styling for Footer */
+h3 {
+    color: #ff007f;
+    text-shadow: 0 0 20px #00ff7f, 0 0 30px #00ff7f, 0 0 40px #00ff7f;
+    font-size: 1.5vmin; /* Scales dynamically */
+    font-weight: 100;
+    letter-spacing: 2px;
+    margin: 0;
+    padding: 10px;
+    align-self: center; /* Centers the footer text */
+    position: relative;
+}
 
-        .copied-message {
-            display: none;
-            color: #00ff7f;
-        }
+/* Link Styling in Footer */
+h3 a {
+    color: #00ff7f;
+    text-decoration: none; /* Remove underline */
+    text-shadow: 0 0 20px #ff007f, 0 0 30px #ff007f, 0 0 40px #ff007f;
+}
 
-        a-scene {
-            width: 50vmin;
-            height: 50vmin;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: 5px solid #ff007f;
-            border-radius: 50%;
-            overflow: hidden;
-            box-shadow: 0 0 20px #ff007f;
-        }
+h3 a:hover {
+    text-decoration: underline; /* Add underline on hover */
+    color: #00ff7f; /* Slight color change on hover */
+}
+
+/* Center container for the scene and dropdown */
+.scene-container {
+    flex: 1; /* Takes up remaining space to center contents */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* A-Frame scene styling */
+a-scene {
+    width: 50vmin;
+    height: 50vmin;
+    border: 5px solid #ff007f;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 0 20px #ff007f;
+    margin-bottom: 5vmin; /* Space below the scene for the dropdown */
+}
+
+/* Dropdown styling */
+select {
+    padding: 10px;
+    font-size: 16px;
+    background-color: #000;
+    color: #ff007f;
+    border: 2px solid #44ff7f;
+    border-radius: 5px;
+    appearance: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+select:focus {
+    outline: none;
+    border-color: #00ff7f;
+}
+
+.copied-message {
+    position: absolute; /* Positioned relative to .scene-container */
+    top: calc(70%); /* 10px below the dropdown */
+    left: 50%; /* Center it horizontally */
+    transform: translateX(-50%);
+    color: #00ff7f;
+    font-size: 2vmin;
+    text-align: center;
+    visibility: hidden; /* Hidden by default */
+    opacity: 0; /* Fully transparent */
+    transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s; /* Smooth fade-in/out */
+    white-space: nowrap; /* Prevent line breaks */
+    z-index: 1000; /* Ensure it appears above other content */
+    text-shadow: 0 0 20px #ff007f, 0 0 30px #ff007f, 0 0 40px #ff007f;
+}
+
+
+
+
     </style>
+
+    
 </head>
 <body>
-    <h1>MSDF Font Viewer</h1>
+    <h1>MSDF Font Library</h1>
+    <h2>
+        Welcome
+    </h2>
 
-    <a-scene embedded>
-        <a-entity id="text-entity" position="0 1.6 -1" text="value: Select a font to view; color: #00ff7f; align: center; negate: false; width: 4"></a-entity>
-        <a-light type="directional" position="0 2 -1" intensity="1"></a-light>
-        <a-light type="ambient" intensity="0.5"></a-light>
-        <a-camera position="0 1.6 0" wasd-controls-enabled="false"></a-camera>
-        <a-sky geometry="" material="shader: threeColorGradientShader; topColor: #44ff7f; middleColor: #a9f8fe; bottomColor: #004cff"></a-sky>
-    </a-scene>
 
-    <select id="fontDropdown" onchange="onFontSelect()">
-        <option value="" disabled selected>Select a font</option>
-    </select>
+
+    <div class="scene-container" style="position: relative;">
+        <a-scene embedded>
+            <a-entity id="text-entity" position="0 1.6 -1" text="value: Select a font to view; color: #00ff7f; align: center; negate: false; width: 4"></a-entity>
+            <a-light type="directional" position="0 2 -1" intensity="1"></a-light>
+            <a-light type="ambient" intensity="0.5"></a-light>
+            <a-camera position="0 1.6 0" wasd-controls-enabled="false"></a-camera>
+            <a-sky geometry="" material="shader: threeColorGradientShader; topColor: #000000; middleColor: #000000; bottomColor: #000000"></a-sky>
+        </a-scene>
     
-    <div id="copiedMessage" class="copied-message">Link copied!</div>
+        <select id="fontDropdown" onchange="onFontSelect()">
+            <option value="" disabled selected>Select a font</option>
+        </select>
+    
+        <!-- Copied Message -->
+        <div id="copiedMessage" class="copied-message">Link copied!</div>
+    </div>
+    
+
+    <h3>
+        Created by 
+        <a href="https://remipetitjean.studio/" target="_blank" style="color: #ff007f; text-decoration: none;">Remi</a> 
+        for 
+        <a href="https://aframe.io" target="_blank" style="color: #ff007f; text-decoration: none;">A-Frame</a> 
+        users
+    </h3>
+    
+
 </body>
+
 </html>
